@@ -10,15 +10,21 @@
 </head>
 <body>
 
-  <header class="header">
+  <div class="splash-screen">
+    <div class="loading-text">Loading...</div>
+</div>
+
+<header class="header">
     <div class="logo">Sienna Moore<span>.</span></div>
-    <nav class="navbar">
-      <a href="#home">Home</a>
-      <a href="#service">Service</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
+    <div id="menu-toggle" class="menu-icon">
+        &#9776; </div>
+    <nav class="navbar" id="navbar">
+        <div id="close-menu" class="close-icon">&times;</div> <a href="#home">Home</a>
+        <a href="#service">Service</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
     </nav>
-  </header>
+</header>
 
   <section class="hero" id="home">
     <div class="text">
@@ -65,7 +71,7 @@
       <div class="project">
         <img src="assets/emxp1.jpg" alt="">
         <h4>Veronica Eva Erichsen</h4>
-        <a href="#">Details →</a>
+        <a href="detail1.html">Details →</a>
       </div>
       <div class="project">
         <img src="assets/exmp2.jpg" alt="">
@@ -117,55 +123,75 @@
   </footer>
 
   <script>
-    // header scroll
-    const header = document.querySelector('.header');
-    window.addEventListener('scroll', () => {
-      header.classList.toggle('scrolled', window.scrollY > 50);
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ambil elemen-elemen DOM yang diperlukan
+        const splashScreen = document.querySelector('.splash-screen');
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const navbar = document.getElementById('navbar');
+        const header = document.querySelector('.header');
 
-    // smooth scroll
-    document.querySelectorAll('.navbar a').forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        const target = document.querySelector(link.getAttribute('href'));
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
+        // ====================================
+        // 1. Kontrol Splash Screen 🎬
+        // ====================================
+        setTimeout(() => {
+            splashScreen.classList.add('hidden');
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 800); 
+        }, 1500); 
 
-    // fade-in animation
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.2 });
+        // ====================================
+        // 2. Kontrol Header Scroll 🔽
+        // ====================================
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
 
-    document.querySelectorAll('section, .footer-top').forEach(el => observer.observe(el));
-  </script>
-
-</body>
-  <script>
-    window.addEventListener("scroll", () => {
-      document.querySelector(".header").classList.toggle("scrolled", window.scrollY > 50);
-    });
-
-    const sections = document.querySelectorAll("section");
-    const reveal = () => {
-      sections.forEach(sec => {
-        const top = sec.getBoundingClientRect().top;
-        if (top < window.innerHeight - 120) sec.classList.add("visible");
-      });
-    };
-    window.addEventListener("scroll", reveal);
-    reveal();
-
-    document.querySelectorAll('.navbar a').forEach(link => {
-      link.addEventListener('click', e => {
-        if (link.hash) {
-          e.preventDefault();
-          const target = document.querySelector(link.hash);
-          target.scrollIntoView({ behavior: 'smooth' });
+        // ====================================
+        // 3. Kontrol Navbar Mobile (Toggle) 🍔
+        // ====================================
+        function toggleMenu() {
+            navbar.classList.toggle('active');
+            document.body.classList.toggle('menu-open', navbar.classList.contains('active'));
         }
-      });
+
+        // Buka Menu
+        if (menuToggle) {
+            menuToggle.addEventListener('click', toggleMenu);
+        }
+
+        if (closeMenu) {
+            closeMenu.addEventListener('click', toggleMenu);
+        }
+
+        document.querySelectorAll('#navbar a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                const target = document.querySelector(link.getAttribute('href'));
+                
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                if (window.innerWidth <= 768 && navbar.classList.contains('active')) {
+                    setTimeout(toggleMenu, 100); 
+                }
+            });
+        });
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, { threshold: 0.1 }); 
+
+        document.querySelectorAll('section, .footer-top').forEach(el => observer.observe(el));
     });
-  </script>
+</script>
+</body>
 </html>
